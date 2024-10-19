@@ -2,38 +2,30 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score
 import matplotlib.pyplot as plt
-import dataset
-import os
+import getData
 
-#replace numeric attribute values with median threshold
-def median_thresholding(df, attribute):
+def median_thr(df, attribute):
   threshold = df[attribute].median()
   df[attribute] = (df[attribute] >= threshold).astype(int)
 
-script_dir = os.path.dirname(os.path.abspath(__file__))
-bank_train_data_file = os.path.join(script_dir, "bank-4/train.csv")
-bank_test_data_file = os.path.join(script_dir, "bank-4/train.csv")
+train_data, test_data = getData.getData()
 
-df_train = pd.read_csv(bank_train_data_file)
-df_train.columns = dataset.bank_columns
-df_test = pd.read_csv(bank_test_data_file)
-df_test.columns = dataset.bank_columns
 numeric_attributes = ["age", "balance", "day", "duration", "campaign", "pdays", "previous"]
 for numeric_attr in numeric_attributes:
-    median_thresholding(df_train, numeric_attr)
-    median_thresholding(df_test, numeric_attr)
+    median_thr(train_data, numeric_attr)
+    median_thr(test_data, numeric_attr)
 
-X_train = df_train.drop(df_train.columns[-1], axis=1).values
+X_train = train_data.drop(train_data.columns[-1], axis=1).values
 
 X_train = X_train[:]
 
-y_train = df_train.iloc[:,-1].apply(lambda x: 1 if x == 'yes' else -1).values
+y_train = train_data.iloc[:,-1].apply(lambda x: 1 if x == 'yes' else -1).values
 
-X_test = df_test.drop(df_train.columns[-1], axis=1).values
+X_test = test_data.drop(train_data.columns[-1], axis=1).values
 
 X_test = X_test[:]
 
-y_test = df_test.iloc[:,-1].apply(lambda x: 1 if x == 'yes' else -1).values
+y_test = test_data.iloc[:,-1].apply(lambda x: 1 if x == 'yes' else -1).values
 
 
 class DecisionTreeStump:
